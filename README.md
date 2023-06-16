@@ -6,7 +6,6 @@ Open a terminal, place the isimip.sh script anywhere and run:
 
 ```
 bash isimip.sh
-
 ```
 ```
 Download climate data with specified parameters.
@@ -17,3 +16,15 @@ Options:
   -s   scenario         Specify the scenario: historical, ssp126, ssp585, all
 
 ```
+Example:
+
+```
+bash isimip.sh -m all -v tas -s all
+
+Please specify a conda environment to activate if ncml files are to be generated. Type 'no' if you want to only download the data.
+Conda environment: 
+
+
+```
+
+This would Download for all models and scenarios, the daily data for tas. Generating ncml files requires the installation of R and climate4R packages (loadeR in particular). 
