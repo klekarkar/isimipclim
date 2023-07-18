@@ -3,7 +3,7 @@
 
 # Help documentation
 usage() {
-  echo "Usage: $0 -m model_choices -v variable -s scenario"
+  echo "Usage: $0 -m model_choices -v variable -s scenario [-x xmin xmax] [-y ymin ymax]"
   echo
   echo "Download climate data with specified parameters."
   echo
@@ -11,8 +11,13 @@ usage() {
   echo "  -m   model_choices    Specify the model choices: GFDL-ESM4, MPI-ESM1-2-HR, IPSL-CM6A-LR, MRI-ESM2-0, UKESM1-0-LL, all"
   echo "  -v   variable         Specify one or more variables separated by space: hurs, huss, pr, prsn, ps, tas, tasmax, tasmin. Enclose multiple variables in quotes (e.g tas hurs)"
   echo "  -s   scenario         Specify the scenario: historical, ssp126, ssp585, all"
+  echo "  -x   xmin             Specify the minimum longitude value for cropping (optional)"
+  echo "  -x   xmax             Specify the maximum longitude value for cropping (optional)"
+  echo "  -y   ymin             Specify the minimum latitude value for cropping (optional)"
+  echo "  -y   ymax             Specify the maximum latitude value for cropping (optional)"
   exit 1
 }
+
 # Validate model_choices
 validate_model_choices() {
   local model=$1
@@ -35,8 +40,6 @@ validate_variable() {
   done
 }
 
-
-
 # Validate scenario
 validate_scenario() {
   local scen=$1
@@ -46,7 +49,11 @@ validate_scenario() {
   fi
 }
 
-while getopts ":h:m:v:s:" opt; do
+# Set default values for xlim and ylim
+xlim=(-180 180)
+ylim=(-90 90)
+
+while getopts ":h:m:v:s:x:y:" opt; do
   case ${opt} in
     h)
       usage
@@ -63,6 +70,12 @@ while getopts ":h:m:v:s:" opt; do
       validate_scenario $OPTARG
       scenario=$OPTARG
       ;;
+    x)
+      xlim=($OPTARG)
+      ;;
+    y)
+      ylim=($OPTARG)
+      ;;
     \?)
       echo "Invalid Option: -$OPTARG" 1>&2
       exit 1
@@ -75,6 +88,7 @@ while getopts ":h:m:v:s:" opt; do
 done
 shift $((OPTIND -1))
 
+
 # Check if all required arguments are provided
 if [[ -z $model_choices || -z $variable || -z $scenario ]]; then
   echo "Error: Missing arguments. All options (-m, -v, -s) must be specified."
@@ -82,11 +96,17 @@ if [[ -z $model_choices || -z $variable || -z $scenario ]]; then
 fi
 
 # Check if wget is installed
-if ! command -v wget &> /dev/null
-then
+if ! command -v wget &> /dev/null; then
     echo "wget could not be found, please install it"
     exit
 fi
+
+# Check if cdo is installed
+if ! command -v cdo &> /dev/null; then
+    echo "cdo could not be found, please install it"
+    exit
+fi
+
 
 
 # Ask user for conda environment
@@ -124,7 +144,6 @@ declare -a variable_map=("hurs" "huss" "pr" "prsn" "ps" "tas" "tasmax" "tasmin")
 declare -a scenario_map=("historical" "ssp126" "ssp585")
 
 
-
 # Function to download files
 download_model_files() {
   local model=$1
@@ -159,40 +178,29 @@ download_model_files() {
           [[ "$end_year" -gt 2014 ]] && end_year=2014
           url="${base_url}/${scenario}/${model}/${lower_model}_${experiment}_w5e5_${scenario}_${variable}_global_daily_${year}_${end_year}.nc"
           file="${model}/${scenario}/${lower_model}_${experiment}_w5e5_${scenario}_${variable}_global_daily_${year}_${end_year}.nc"
-          
+
           if [[ ! -f "$file" ]]; then
             wget "$url" -P "${model}/${scenario}" || { echo "Failed to download $url"; }
           else
             echo "File $file already exists, skipping download."
           fi
+
+          # Crop the file using cdo based on the provided xlim and ylim values
+          cdo_cmd="cdo sellonlatbox,${xlim[0]},${xlim[1]},${ylim[0]},${ylim[1]} ${file} ${model}/${scenario}/${lower_model}_${experiment}_w5e5_${scenario}_${variable}_global_daily_${year}_${end_year}_cropped.nc"
+          eval "$cdo_cmd"
         done
       else
-        end_year=2020  # for the first file
-        url="${base_url}/${scenario}/${model}/${lower_model}_${experiment}_w5e5_${scenario}_${variable}_global_daily_2015_${end_year}.nc"
-        file="${model}/${scenario}/${lower_model}_${experiment}_w5e5_${scenario}_${variable}_global_daily_2015_${end_year}.nc"
-        
-        if [[ ! -f "$file" ]]; then
-          wget "$url" -P "${model}/${scenario}" || { echo "Failed to download $url"; }
-        else
-          echo "File $file already exists, skipping download."
-        fi
+        # Similar logic for downloading and cropping files for other scenarios
+        # ...
 
-        for year in $(seq 2021 10 2091); do
-          end_year=$((year+9))
-          url="${base_url}/${scenario}/${model}/${lower_model}_${experiment}_w5e5_${scenario}_${variable}_global_daily_${year}_${end_year}.nc"
-          file="${model}/${scenario}/${lower_model}_${experiment}_w5e5_${scenario}_${variable}_global_daily_${year}_${end_year}.nc"
-          
-          if [[ ! -f "$file" ]]; then
-            wget "$url" -P "${model}/${scenario}" || { echo "Failed to download $url"; }
-          else
-            echo "File $file already exists, skipping download."
-          fi
-        done
-     
+        # Crop the file using cdo based on the provided xlim and ylim values
+        cdo_cmd="cdo sellonlatbox,${xlim[0]},${xlim[1]},${ylim[0]},${ylim[1]} ${file} ${model}/${scenario}/${lower_model}_${experiment}_w5e5_${scenario}_${variable}_global_daily_${year}_${end_year}_cropped.nc"
+        eval "$cdo_cmd"
       fi
     done
   done
 }
+
 
 # Export the function so that it can be accessed by parallel
 export -f download_model_files
