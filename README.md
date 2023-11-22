@@ -25,7 +25,7 @@ Example:
 Please be aware that you need cdo installed. You can do so by running "sudo apt-get install cdo"
 
 ```
-bash isimip.sh -m all -v tas -s historical -x -120 -100 -y 30 40
+bash isimip.sh -m all -v tas -s historical -x "-120 -100" -y "30 40"
 
 Please specify a conda environment to activate if ncml files are to be generated. Type 'no' if you want to only download the data.
 Conda environment: 
