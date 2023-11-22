@@ -22,7 +22,9 @@ Options:
 
 ```
 Example:
-Please be aware that you need cdo installed. You can do so by running "sudo apt-get install cdo"
+"Please be aware that you need cdo installed. You can do so by running sudo apt-get install cdo"
+"If you are on Windows you need to also install parallel with sudoapt-get install parallel"
+
 
 ```
 bash isimip.sh -m all -v tas -s historical -x "-120 -100" -y "30 40"
