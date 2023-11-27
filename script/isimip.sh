@@ -182,12 +182,13 @@ download_model_files() {
                     cdo_cmd="cdo sellonlatbox,${xmin},${xmax},${ymin},${ymax} $file $output_file"
 
                     echo "Executing cdo command: $cdo_cmd"
-                    rm -f "$file"
+                  
                     eval "$cdo_cmd"
                     if [ $? -ne 0 ]; then
                         echo "Error executing cdo command: $cdo_cmd"
                     else
                         echo "Cropping successful: $output_file"
+                        rm -f "$file"
                     fi
                 done
             else
@@ -200,12 +201,13 @@ download_model_files() {
                 cdo_cmd="cdo sellonlatbox,${xmin},${xmax},${ymin},${ymax} $file $output_file"
 
                 echo "Executing cdo command: $cdo_cmd"
-                rm -f "$file"
+            
                 eval "$cdo_cmd"
                 if [ $? -ne 0 ]; then
                     echo "Error executing cdo command: $cdo_cmd"
                 else
                     echo "Cropping successful: $output_file"
+                    rm -f "$file"
                 fi
             fi
         done
