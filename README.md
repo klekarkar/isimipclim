@@ -3,14 +3,23 @@
 The script folder contains the function that needs to be called from a terminal to download and then aggregate (optional) the netCDF files into ncml files. The script allows you to easily download the ISIMIP 3a and b climate data for a specific region, variable, climate model, and scenario.
 
 ## Requirements
- For aggregating netCDF files into ncml files (optional), it is necessary to have a conda environment with R and climate4R packages installed. This can be done easily with:
+### Linux
+Only wget and cdo are needed. These can be easily installed with:
+
+```
+sudo apt-get install wget
+sudo apt-get install cdo
+```
+
+For aggregating netCDF files into ncml files (optional), it is necessary to have a conda environment with R and climate4R packages installed. This can be done easily with:
 
 ```
 conda create --name climate4R
 conda activate climate4R
 conda install -c conda-forge -c r -c defaults -c santandermetgroup climate4r
 ```
-**If you are on Windows, install the Windows Subsystem for Linux (WSL) first**
+### Windows
+**If you are on Windows, install the Windows Subsystem for Linux (WSL) first**, then follow the instructions for Linux OS.
 
 ## How to run it
 Open a terminal, place the isimip.sh script anywhere and run:
