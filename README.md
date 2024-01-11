@@ -1,11 +1,12 @@
 # Automatically download and process ISIMIP3a-b climate data
-The script folder contains the function that needs to be called from a shell to download and then aggregate (optional) the netCDF files into ncml files. For this last step, it is necessary to have a conda environment with R and climate4R packages installed. This can be done easily with:
+The script folder contains the function that needs to be called from a terminal to download and then aggregate (optional) the netCDF files into ncml files. For this last step, it is necessary to have a conda environment with R and climate4R packages installed. This can be done easily with:
 
 ```
 conda create --name climate4R
 conda activate climate4R
 conda install -c conda-forge -c r -c defaults -c santandermetgroup climate4r
 ```
+**If you are on Windows, install the Windows Subsystem for Linux (WSL) first**
 
 ## How to run the function
 Open a terminal, place the isimip.sh script anywhere and run:
