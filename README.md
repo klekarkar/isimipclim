@@ -1,5 +1,5 @@
 # Easy Downloading and processing of ISIMIP3a-b climate data
-## What does it do
+## What the script does
 The script folder contains the function that needs to be called from a terminal to download and then aggregate (optional) the netCDF files into ncml files. The script allows you to easily download the ISIMIP 3a and b climate data for a specific region, variable, climate model, and scenario.
 
 ## Requirements
