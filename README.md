@@ -50,4 +50,4 @@ Please specify a conda environment to activate if ncml files are to be generated
 
 ```
 
-This would Download for all models and scenarios, the daily data for tas. Generating ncml files requires the installation of climate4R in a conda environment. 
+This would Download for all models and scenarios, the daily data for tas.
