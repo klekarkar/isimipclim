@@ -8,11 +8,11 @@ Open a terminal, place the isimip.sh script anywhere and run:
 bash isimip.sh
 ```
 ```
-Download climate data with specified parameters.
+Download ISIMIP 3 climate data with specified parameters.
 
 Options:
   -m   model_choices    Specify the model choices: GFDL-ESM4, MPI-ESM1-2-HR, IPSL-CM6A-LR, MRI-ESM2-0, UKESM1-0-LL, all
-  -v   variable         Specify one or more variables separated by space: hurs, huss, pr, prsn, ps, tas, tasmax, tasmin. Enclose multiple variables in quotes (e.g tas hurs)
+  -v   variable         Specify one or more variables separated by space: hurs, huss, pr, prsn, ps, tas, tasmax, tasmin. Enclose multiple variables in quotes separated by a space
   -s   scenario         Specify the scenario: historical, ssp126, ssp585, all
   -x   xmin             Specify the minimum longitude value for cropping (optional)
   -x   xmax             Specify the maximum longitude value for cropping (optional)
