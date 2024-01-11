@@ -29,10 +29,9 @@ If you are on Windows, you need to also install parallel with "sudo apt-get inst
 ```
 bash isimip.sh -m all -v tas -s historical -x "-120 -100" -y "30 40"
 
-Please specify a conda environment to activate if ncml files are to be generated. Type 'no' if you want to only download the data.
-Conda environment: 
+Please specify a conda environment to activate if ncml files are to be generated. Type 'no' if you only want to download the data. The required conda env installation instruction can be retrieved here https://github.com/SantanderMetGroup/climate4R
 
 
 ```
 
-This would Download for all models and scenarios, the daily data for tas. Generating ncml files requires the installation of R and climate4R packages (loadeR in particular). 
+This would Download for all models and scenarios, the daily data for tas. Generating ncml files requires the installation of climate4R in a conda environment. 
