@@ -4,11 +4,11 @@
 usage() {
     echo "Usage: $0 -m model_choices -v variable -s scenario [-x xmin xmax] [-y ymin ymax]"
     echo
-    echo "Download climate data with specified parameters."
+    echo "Download ISIMIP 3 climate data with specified parameters."
     echo
     echo "Options:"
     echo "  -m   model_choices    Specify the model choices: GFDL-ESM4, MPI-ESM1-2-HR, IPSL-CM6A-LR, MRI-ESM2-0, UKESM1-0-LL, all"
-    echo "  -v   variable         Specify one or more variables separated by space: hurs, huss, pr, prsn, ps, tas, tasmax, tasmin. Enclose multiple variables in quotes (e.g tas hurs)"
+    echo "  -v   variable         Specify one or more variables separated by space: hurs, huss, pr, prsn, ps, tas, tasmax, tasmin. Enclose multiple variables separated by a space in quotes"
     echo "  -s   scenario         Specify the scenario: historical, ssp126, ssp585, all"
     echo "  -x   xmin             Specify the minimum longitude value for cropping (optional)"
     echo "  -x   xmax             Specify the maximum longitude value for cropping (optional)"
@@ -106,7 +106,7 @@ if ! command -v cdo &> /dev/null; then
 fi
 
 # Ask user for conda environment
-echo "Please specify a conda environment to activate if ncml files are to be generated. Type 'no' if you want to only download the data."
+echo "Please specify a conda environment to activate if ncml files are to be generated. Type 'no' if you only want to download the data. The required conda env installation instruction can be retrieved here https://github.com/SantanderMetGroup/climate4R"
 read -p "Conda environment: " conda_env
 
 if [[ $conda_env == "no" ]]; then
@@ -193,22 +193,32 @@ download_model_files() {
                 done
             else
                 # Similar logic for downloading and cropping files for other scenarios
-                # ...
+                 for year in $(seq 2021 10 2091); do
+                    end_year=$((year+9))
+                    url="${base_url}/${scenario}/${model}/${lower_model}_${experiment}_w5e5_${scenario}_${variable}_global_daily_${year}_${end_year}.nc"
+                    file="${model}/${scenario}/${lower_model}_${experiment}_w5e5_${scenario}_${variable}_global_daily_${year}_${end_year}.nc"
 
-                # Crop the file using cdo based on the provided xlim and ylim values
-                output_file="${model}/${scenario}/${lower_model}_${experiment}_w5e5_${scenario}_${variable}_global_daily_${year}_${end_year}_cropped.nc"
-        
-                cdo_cmd="cdo sellonlatbox,${xmin},${xmax},${ymin},${ymax} $file $output_file"
+                    if [[ ! -f "$file" ]]; then
+                        wget "$url" -P "${model}/${scenario}" || { echo "Failed to download $url"; }
+                    else
+                        echo "File $file already exists, skipping download."
+                    fi
 
-                echo "Executing cdo command: $cdo_cmd"
+                    # Crop the file using cdo based on the provided xlim and ylim values
+                    output_file="${model}/${scenario}/${lower_model}_${experiment}_w5e5_${scenario}_${variable}_global_daily_${year}_${end_year}_cropped.nc"
             
-                eval "$cdo_cmd"
-                if [ $? -ne 0 ]; then
-                    echo "Error executing cdo command: $cdo_cmd"
-                else
-                    echo "Cropping successful: $output_file"
-                    rm -f "$file"
-                fi
+                    cdo_cmd="cdo sellonlatbox,${xmin},${xmax},${ymin},${ymax} $file $output_file"
+
+                    echo "Executing cdo command: $cdo_cmd"
+                  
+                    eval "$cdo_cmd"
+                    if [ $? -ne 0 ]; then
+                        echo "Error executing cdo command: $cdo_cmd"
+                    else
+                        echo "Cropping successful: $output_file"
+                        rm -f "$file"
+                    fi
+                done
             fi
         done
     done
