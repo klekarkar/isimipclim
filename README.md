@@ -12,6 +12,7 @@ sudo apt-get install cdo
 ```
 To process multiple files efficiently, install `parallel`
 ```
+sudo apt update
 sudo apt install parallel
 ```
 
